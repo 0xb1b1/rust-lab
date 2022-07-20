@@ -31,23 +31,21 @@ fn main() {
 
 fn create_dev_env(root: &PathBuf) -> () {
     // Declare files and directories to be created
-    let env_dirs: [&str; 2] =  ["src",
-                                "srv"];
+    const ENV_DIRS: [&str; 2] =  ["src",
+                                  "srv"];
 
-    let env_files: [&str; 3] = ["Dockerfile",
-                                "docker-compose.yml",
-                                "README.md"];
+    const ENV_FILES: [&str; 3] = ["Dockerfile",
+                                  "docker-compose.yml",
+                                  "README.md"];
 
     // Create directories
-    for dir in env_dirs.iter() {
-        let dirpath: PathBuf = root.join(dir);
-        create_dir(&dirpath);
+    for dir in ENV_DIRS.iter() {
+        create_dir(&(root.join(dir)));
     }
 
     // Create files
-    for file in env_files.iter() {
-        let filepath: PathBuf = root.join(file);
-        create_file(&filepath);
+    for file in ENV_FILES.iter() {
+        create_file(&(root.join(file)));
     }
 }
 

@@ -12,18 +12,20 @@ fn main() {
     // let docker_root: String = args.nth(1).unwrap()
     //                                      .parse::<String>()
     //                                      .unwrap();  // TODO: Fail gracefully with match
+    
+    // Get new Docker root name via args
     let args: Vec<String> = args().collect();
     assert_eq!(2, args.len(), "This application accepts exactly one argument");
     let docker_root: &str = &args[1];
 
+    // Create full path to Docker root
     let docker_root_path: PathBuf = env::current_dir().ok()
                                                       .unwrap()
                                                       .join(docker_root);
     
     // Create Docker root directory
-    if !Path::new(&docker_root_path).is_dir() {
-        fs::create_dir(&docker_root_path).ok();
-    }
+    create_dir(&docker_root_path);
+    // Create new dev environment in Docker root directory
     create_dev_env(&docker_root_path);
 }
 
@@ -39,16 +41,26 @@ fn create_dev_env(root: &PathBuf) -> () {
     // Create directories
     for dir in env_dirs.iter() {
         let dirpath: PathBuf = root.join(dir);
-        if !Path::new(&dirpath).is_dir() {
-            fs::create_dir(&dirpath).ok();
-        }
+        create_dir(&dirpath);
     }
 
     // Create files
     for file in env_files.iter() {
         let filepath: PathBuf = root.join(file);
-        if !Path::new(&filepath).exists() {
-            File::create(filepath).unwrap();
-        }
+        create_file(&filepath);
+    }
+}
+
+// Create file if it doesn't exist TODO: better solution?
+fn create_file(filepath: &PathBuf) -> () {
+    if !Path::new(&filepath).exists() {
+        File::create(filepath).unwrap();
+    }
+}
+
+// Create directory if it doesn't exist TODO: better solution?
+fn create_dir(dirpath: &PathBuf) -> () {
+    if !Path::new(&dirpath).is_dir() {
+        fs::create_dir(&dirpath).ok();
     }
 }

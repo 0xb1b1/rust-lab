@@ -1,10 +1,9 @@
 use std::env;
 //use std::env::{args, Args};
-use std::env::args;
+//use std::env::args;
 use std::fs;
 use std::fs::File;
-use std::path::Path;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 fn main() {
     // Get new Docker root name via args
@@ -14,7 +13,7 @@ fn main() {
     //                                      .unwrap();  // TODO: Fail gracefully with match
     
     // Get new Docker root name via args
-    let args: Vec<String> = args().collect();
+    let args: Vec<String> = env::args().collect();
     assert_eq!(2, args.len(), "This application accepts exactly one argument");
     let docker_root: &str = &args[1];
 
@@ -24,7 +23,9 @@ fn main() {
                                                       .join(docker_root);
     
     // Create Docker root directory
-    create_dir(&docker_root_path);
+    if !create_dir(&docker_root_path) {
+        panic!("Directory {} already exists!", docker_root);
+    }
     // Create new dev environment in Docker root directory
     create_dev_env(&docker_root_path);
 }
@@ -50,15 +51,19 @@ fn create_dev_env(root: &PathBuf) -> () {
 }
 
 // Create file if it doesn't exist TODO: better solution?
-fn create_file(filepath: &PathBuf) -> () {
+fn create_file(filepath: &PathBuf) -> bool {
     if !Path::new(&filepath).exists() {
         File::create(filepath).unwrap();
+        return true
     }
+    false
 }
 
 // Create directory if it doesn't exist TODO: better solution?
-fn create_dir(dirpath: &PathBuf) -> () {
+fn create_dir(dirpath: &PathBuf) -> bool {
     if !Path::new(&dirpath).is_dir() {
         fs::create_dir(&dirpath).ok();
+        return true
     }
+    false
 }
